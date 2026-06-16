@@ -40,7 +40,7 @@ def _download_ffmpeg(dest: Path):
         tmp.unlink(missing_ok=True)
 
 def find_ffmpeg() -> str:
-    local = Path(__file__).parent / "ffmpeg" / "ffmpeg.exe"
+    local = Path(__file__).parent.parent / "ffmpeg" / "ffmpeg.exe"
     if local.exists():
         return str(local)
     from shutil import which

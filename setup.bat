@@ -4,7 +4,7 @@ pip install Pillow python-docx fpdf2 pypdf pywin32
 
 echo.
 echo Registering context menu...
-python install.py
+python src\install.py
 
 echo.
 pause
