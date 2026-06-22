@@ -2,3 +2,5 @@
 .claude
 .agents
 CLAUDE.md
+ffmpeg/ffmpeg.exe
+__pycache__/
