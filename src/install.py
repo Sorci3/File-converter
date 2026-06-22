@@ -21,6 +21,13 @@ MENUS = {
         ("BMP",               "bmp"),
         ("TIFF",              "tiff"),
         ("WebP",              "webp"),
+        ("SVG",               "svg"),
+    ],
+    (".svg",): [
+        ("PNG",               "png"),
+        ("JPEG",              "jpg"),
+        ("WebP",              "webp"),
+        ("BMP",               "bmp"),
     ],
     (".mp4", ".avi", ".mov", ".wmv", ".flv"): [
         ("MP4",               "mp4"),

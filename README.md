@@ -6,10 +6,14 @@ Adds a **"Convert to..."** submenu to the Windows Explorer right-click menu.
 
 | Type | Formats |
 |------|---------|
-| Images | JPEG, PNG, GIF, BMP, TIFF, WebP |
-| Video | MP4, AVI, MOV, WMV, FLV | and audio extraction with MP4 to MP3
+| Images | JPEG, PNG, GIF, BMP, TIFF, WebP, SVG |
+| Video | MP4, AVI, MOV, WMV, FLV (+ audio extraction, e.g. MP4 → MP3) |
 | Audio | MP3, WAV, AAC, FLAC, OGG |
 | Documents | PDF, DOCX, TXT |
+
+Converting an image **to SVG** vectorizes it as a monochrome silhouette (single
+`fill`), so the result can be recolored afterwards. Converting **from SVG**
+rasterizes it to any image format.
 
 ## Requirements
 
@@ -35,7 +39,7 @@ The converted file is saved in the same folder as the source file.
 ## Uninstall
 
 ```
-python uninstall.py
+uninstall.bat
 ```
 
 Removes the context menu entries from the registry. Does not delete ffmpeg or any converted files.
@@ -43,10 +47,12 @@ Removes the context menu entries from the registry. Does not delete ffmpeg or an
 ## Project structure
 
 ```
-fileConverter/
-├── converter.py    # conversion logic
-├── install.py      # registers the context menu
-├── uninstall.py    # removes the context menu
-├── setup.bat       # one-click install
-└── ffmpeg/         # ffmpeg.exe (auto-downloaded)
+File-converter/
+├── setup.bat           # one-click install (deps + context menu)
+├── uninstall.bat       # removes the context menu
+├── ffmpeg/             # ffmpeg.exe (auto-downloaded on first use)
+└── src/
+    ├── converter.py    # conversion logic
+    ├── install.py      # registers the context menu
+    └── uninstall.py    # removes the context menu
 ```

@@ -52,15 +52,46 @@ def find_ffmpeg() -> str:
 
 # --- Images ---
 
-IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp"}
+IMAGE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "webp", "svg"}
 IMAGE_FORMATS = {"jpeg": "JPEG", "jpg": "JPEG", "png": "PNG",
                  "gif": "GIF", "bmp": "BMP", "tiff": "TIFF", "tif": "TIFF", "webp": "WEBP"}
 
-def convert_image(src: Path, fmt: str):
+def _open_image(src: Path):
+    """Return a PIL image from any supported source, rasterizing SVG first."""
     from PIL import Image
+    if src.suffix.lstrip(".").lower() == "svg":
+        import io
+        from svglib.svglib import svg2rlg
+        from reportlab.graphics import renderPM
+        png_bytes = renderPM.drawToString(svg2rlg(str(src)), fmt="PNG")
+        return Image.open(io.BytesIO(png_bytes))
+    return Image.open(src)
+
+def raster_to_svg(src: Path):
+    # Binary (monochrome) trace: a single-fill silhouette, easy to recolor afterwards.
+    # ponytail: colormode='color' if you need a faithful multicolor vectorization.
+    import vtracer
+    dst = out_path(src, "svg")
+    in_path = src
+    # vtracer reads PNG/JPG directly; rasterize anything else (incl. SVG) to a temp PNG first.
+    if src.suffix.lstrip(".").lower() not in ("png", "jpg", "jpeg"):
+        import tempfile
+        in_path = Path(tempfile.mktemp(suffix=".png"))
+        _open_image(src).save(in_path, "PNG")
+    try:
+        vtracer.convert_image_to_svg_py(str(in_path), str(dst), colormode="binary")
+    finally:
+        if in_path != src:
+            in_path.unlink(missing_ok=True)
+    print(f"Done: {dst}")
+
+def convert_image(src: Path, fmt: str):
+    if fmt == "svg":
+        raster_to_svg(src)
+        return
     pil_fmt = IMAGE_FORMATS.get(fmt, fmt.upper())
     dst = out_path(src, "jpg" if fmt == "jpeg" else fmt)
-    img = Image.open(src)
+    img = _open_image(src)
     # RGBA → RGB required for JPEG (no transparency support)
     if pil_fmt == "JPEG" and img.mode in ("RGBA", "P"):
         img = img.convert("RGB")
